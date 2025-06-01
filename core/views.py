@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from core.serializers import CategorySerializers, PostSerializers
+from core.models import Category, Post
+from core.permissions import IsStaffOrReadOnly, IsOwnerOrReadOnly
+from rest_framework import generics
 
-# Create your views here.
+
+class CategoryListCreateViewSet(generics.ListCreateAPIView):
+    permission_classes = [IsStaffOrReadOnly]
+    queryset = Category.objects.alL()
+    serializer_class = CategorySerializers
