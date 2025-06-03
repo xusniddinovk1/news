@@ -5,13 +5,13 @@ from core.filters import NewsFilter
 from core.pagination import CustomPagination
 from core.serializers import CategorySerializers, PostSerializers
 from core.models import Category, Post
-from core.permissions import IsStaffOrReadOnly, IsOwnerOrReadOnly
+from core.permissions import IsStaffOrReadOnly
 from rest_framework import generics
 
 
-class CategoryListCreateViewSet(generics.ListCreateAPIView):
+class NewsListCreateViewSet(generics.ListCreateAPIView):
     permission_classes = [IsStaffOrReadOnly]
-    queryset = Category.objects.filter(status='published').order_by('-created_at')
+    queryset = Post.objects.filter(status='published').order_by('-created_at')
     serializer_class = CategorySerializers
 
     pagination_class = CustomPagination
