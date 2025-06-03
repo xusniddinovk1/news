@@ -34,7 +34,6 @@ class Post(models.Model):
     title = models.CharField(max_length=200, null=False, blank=False)
     slug = models.SlugField(max_length=200, unique_for_date='publish')
     context = models.TextField()
-    image = models.ImageField(upload_to='news_images/')
     publish = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

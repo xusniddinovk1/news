@@ -4,22 +4,29 @@ from rest_framework.response import Response
 from core.filters import NewsFilter
 from core.pagination import CustomPagination
 from core.serializers import CategorySerializers, PostSerializers
-from core.models import Category, Post
+from core.models import Post
 from core.permissions import IsStaffOrReadOnly
-from rest_framework import generics
+from rest_framework import viewsets
 
 
-class NewsListCreateViewSet(generics.ListCreateAPIView):
+class NewsViewSet(viewsets.ModelViewSet):
     permission_classes = [IsStaffOrReadOnly]
     queryset = Post.objects.filter(status='published').order_by('-created_at')
-    serializer_class = CategorySerializers
+    serializer_class = PostSerializers
+    lookup_field = 'slug'
 
     pagination_class = CustomPagination
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filter_class = NewsFilter
-    search_fields = ['title', 'content']
+    search_fields = ['title', 'context']
     ordering_fields = ['created_at']
+
+    def get_queryset(self):
+        queryset = Post.objects.all()
+        if self.request.method == 'GET':
+            queryset = queryset.filter(status='published')
+        return queryset
 
     def list(self, request, *args, **kwargs):
         category = request.query_params.get('category', None)

@@ -1,2 +1,2 @@
-from news_view import *
-from misc import *
+from .news_view import *
+from .misc import *
