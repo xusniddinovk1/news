@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 
 
 class PublishManager(models.Manager):
@@ -8,14 +9,20 @@ class PublishManager(models.Manager):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=50, null=False, blank=False)
+    title = models.CharField(max_length=50, null=False, blank=False)
+    slug = models.SlugField(max_length=200, blank=False, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ('-created_at',)
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return self.name
+        return self.title
 
 
 class Post(models.Model):
@@ -27,6 +34,7 @@ class Post(models.Model):
     title = models.CharField(max_length=200, null=False, blank=False)
     slug = models.SlugField(max_length=200, unique_for_date='publish')
     context = models.TextField()
+    image = models.ImageField(upload_to='news_images/')
     publish = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -39,6 +47,11 @@ class Post(models.Model):
 
     objects = models.Manager()
     published = PublishManager()
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
